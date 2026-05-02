@@ -24,10 +24,8 @@ namespace SpellEditor.Sources.Controls
         private int _ContentsIndex;
         private int _Language;
         private IDatabaseAdapter _Adapter;
-        private DataTable _Table = new DataTable();
-        public DataTable Table { get { return _Table; } }
+        private readonly DataTable _Table = new DataTable();
         private bool _initialised = false;
-        private bool _EnableEdits = true;
 
         public void Initialise()
         {
@@ -136,34 +134,6 @@ namespace SpellEditor.Sources.Controls
             }
         }
 
-        public void PopulateFromOther(SpellSelectionList source)
-        {
-            _EnableEdits = false; // quick way to disable right click options with popup
-
-            LocaleManager.Instance.MarkDirty();
-
-            _Table = source.Table;
-
-            /*
-            // Test copying from mainwindow list instead of recreating new
-            var newElements = new List<UIElement>();
-            foreach (var item in source.Items)
-            {
-                if (item is SpellSelectionEntry entry)
-                {
-                    // create copy
-                    SpellSelectionEntry new_item = new SpellSelectionEntry(entry);
-                    newElements.Add(entry);
-                }
-            }
-            var newSrc = new List<object>();
-            newSrc.AddRange(newElements);
-            ItemsSource = newSrc;*/
-
-            // if items list is empty, it will create new items from _Table
-            RefreshSpellList();
-        }
-
         public void AddNewSpell(uint copyFrom, uint copyTo)
         {
             // Copy spell in DB
@@ -268,12 +238,9 @@ namespace SpellEditor.Sources.Controls
                 var row = collection[rowIndex];
                 var entry = new SpellSelectionEntry();
                 entry.RefreshEntry(row, _Language);
-                if (_EnableEdits)
-                {
-                    entry.SetCopyClickAction(DuplicateAction);
-                    entry.SetDeleteClickAction(DeleteAction);
-                    entry.SetPasteClickAction(PasteAction);
-                }
+                entry.SetCopyClickAction(DuplicateAction);
+                entry.SetDeleteClickAction(DeleteAction);
+                entry.SetPasteClickAction(PasteAction);
                 newElements.Add(entry);
                 ++_ContentsIndex;
             }
